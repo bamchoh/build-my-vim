@@ -18,6 +18,9 @@ set LUA_VERSION=51
 set LUAPATH=c:/dev/lua%LUA_VERSION%/src
 set PY3_VER=37
 set PY3PATH=%LOCALAPPDATA%/Programs/Python/Python%PY3_VER%-32
+set RB_VER=25
+set RB_API_VER=2.5.0
+set RB_PATH=C:/Ruby%RB_VER%-x64
 
 git clone https://github.com/vim/vim
 
@@ -32,7 +35,7 @@ if "%ERRORLEVEL%" == "128" (
 REM gvim.exe
 echo Start to build gvim.exe
 make -f Make_ming.mak clean
-make -f Make_ming.mak TERMINAL=yes STATIC_STDCPLUS=yes DEBUG=no LUA=%LUAPATH% DYNAMIC_LUA=yes LUA_VER=%LUA_VERSION% PYTHON3=%PY3PATH% DYNAMIC_PYTHON3=yes PYTHON3_VER=%PY3_VER%
+make -f Make_ming.mak TERMINAL=yes STATIC_STDCPLUS=yes DEBUG=no LUA=%LUAPATH% DYNAMIC_LUA=yes LUA_VER=%LUA_VERSION% PYTHON3=%PY3PATH% DYNAMIC_PYTHON3=yes PYTHON3_VER=%PY3_VER% RUBY=%RB_PATH% DYNAMIC_RUBY=yes RUBY_VER=%RB_VER% RUBY_API_VER_LONG=%RB_API_VER%
 
 if exist gvim.exe (
   mv C:/Vim/gvim.exe C:/Vim/gvim_old.exe
@@ -42,7 +45,7 @@ if exist gvim.exe (
 REM vim.exe
 echo Start to build vim.exe
 make -f Make_ming.mak clean
-make -f Make_ming.mak GUI=NO TERMINAL=yes STATIC_STDCPLUS=yes DEBUG=no LUA=%LUAPATH% DYNAMIC_LUA=yes LUA_VER=%LUA_VERSION% PYTHON3=%PY3PATH% DYNAMIC_PYTHON3=yes PYTHON3_VER=%PY3_VER%
+make -f Make_ming.mak GUI=NO TERMINAL=yes STATIC_STDCPLUS=yes DEBUG=no LUA=%LUAPATH% DYNAMIC_LUA=yes LUA_VER=%LUA_VERSION% PYTHON3=%PY3PATH% DYNAMIC_PYTHON3=yes PYTHON3_VER=%PY3_VER% RUBY=%RB_PATH% DYNAMIC_RUBY=yes RUBY_VER=%RB_VER% RUBY_API_VER_LONG=%RB_API_VER%
 
 if exist vim.exe (
   mv C:/Vim/vim.exe C:/Vim/vim_old.exe

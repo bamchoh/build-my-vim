@@ -32,6 +32,12 @@ def build_vim(type)
   end
 end
 
+def copy_runtime
+  src = File.join(__dir__, "vim", "runtime", "*")
+  dst = File.join("C:/Vim", "vim81")
+  FileUtils.cp_r(src, dst, :force => true)
+end
+
 desc 'Task description'
 task :all => [:git_pull, :gvim, :vim] do
   FileUtils.mv "C:/Vim/vim.exe", "C:/Vim/vim_old.exe"

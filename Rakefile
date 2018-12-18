@@ -40,8 +40,12 @@ end
 
 desc 'Task description'
 task :all => [:git_pull, :gvim, :vim] do
-  FileUtils.mv "C:/Vim/vim.exe", "C:/Vim/vim_old.exe"
-  FileUtils.mv "C:/Vim/gvim.exe", "C:/Vim/gvim_old.exe"
+  begin
+    FileUtils.mv "C:/Vim/vim.exe", "C:/Vim/vim_old.exe"
+    FileUtils.mv "C:/Vim/gvim.exe", "C:/Vim/gvim_old.exe"
+  rescue => e
+    puts e.message
+  end
   FileUtils.mv File.join(__dir__, "vim", "src", "vim.exe"), "C:/Vim/vim.exe"
   FileUtils.mv File.join(__dir__, "vim", "src", "gvim.exe"), "C:/Vim/gvim.exe"
 end

@@ -12,23 +12,34 @@ RB_API_VER="2.5.0"
 RB_PATH="C:/Ruby#{RB_VER}-x64"
 
 def build_vim(type)
-  Dir.chdir(File.join(__dir__, "vim", "src")) do
-    cmd = ["make", "-f", "Make_ming.mak",
-           "TERMINAL=yes",
-           "STATIC_STDCPLUS=yes",
-           "DEBUG=no",
-           "LUA=#{LUAPATH}",
-           "DYNAMIC_LUA=yes",
-           "LUA_VER=#{LUA_VERSION}",
-           "PYTHON3=#{PY3PATH}",
-           "DYNAMIC_PYTHON3=yes",
-           "PYTHON3_VER=#{PY3_VER}",
-           "RUBY=#{RB_PATH}",
-           "DYNAMIC_RUBY=yes",
-           "RUBY_VER=#{RB_VER}",
-           "RUBY_API_VER_LONG=#{RB_API_VER}"]
-    cmd << "GUI=NO" if type == "vim"
-    return Open3.capture3(*cmd)
+  cmd = ["make", "-f", "Make_cyg_ming.mak",
+         "TERMINAL=yes",
+         "STATIC_STDCPLUS=yes",
+         "DEBUG=no",
+         "LUA=#{LUAPATH}",
+         "DYNAMIC_LUA=yes",
+         "LUA_VER=#{LUA_VERSION}",
+         "PYTHON3=#{PY3PATH}",
+         "DYNAMIC_PYTHON3=yes",
+         "PYTHON3_VER=#{PY3_VER}",
+         "RUBY=#{RB_PATH}",
+         "DYNAMIC_RUBY=yes",
+         "RUBY_VER=#{RB_VER}",
+         "RUBY_API_VER_LONG=#{RB_API_VER}"]
+  cmd << "GUI=NO" if type == "vim"
+  return cmd
+end
+
+def exec(cmd)
+  Open3.popen3(*cmd) do |i, o, e, w|
+    i.close
+    print o.read
+    s = w.value
+    if s.exited? && s.exitstatus != 0 && s.exitstatus != 128
+      puts "unknown exit status!! #{s.exitstatus}"
+      puts "error : #{e.read}"
+      next
+    end
   end
 end
 
@@ -52,55 +63,35 @@ end
 
 task :gvim => :make_clean do |t|
   puts t.name
-  _, e, s = build_vim(t.name)
-  if s.exited? && s.exitstatus != 0
-    puts "unknown exit status!! #{s.exitstatus}"
-    puts "error : #{e}"
-      next
+  Dir.chdir(File.join(__dir__, "vim", "src")) do
+    exec(build_vim(t.name))
   end
 end
 
 task :vim => :make_clean do |t|
   puts t.name
-  _, e, s = build_vim(t.name)
-  if s.exited? && s.exitstatus != 0
-    puts "unknown exit status!! #{s.exitstatus}"
-    puts "error : #{e}"
-      next
+  Dir.chdir(File.join(__dir__, "vim", "src")) do
+    exec(build_vim(t.name))
   end
 end
 
 task :make_clean do
   puts "make_clean"
   Dir.chdir(File.join(__dir__, "vim", "src")) do
-    _, e, s = Open3.capture3("make -f Make_ming.mak clean")
-    if s.exited? && s.exitstatus != 0
-      puts "unknown exit status!! #{s.exitstatus}"
-      puts "error : #{e}"
-        next
-    end
+    exec("cd")
+    exec("make -f Make_cyg_ming.mak clean")
   end
 end
 
 task :git_pull => :git_clone do
   puts "git_pull"
   Dir.chdir(File.join(__dir__, "vim")) do
-    _, e, s = Open3.capture3("git pull")
-    if s.exited? && s.exitstatus != 0
-      puts "unknown exit status!! #{s.exitstatus}"
-      puts "error : #{e}"
-        next
-    end
+    exec("git pull")
   end
 end
 
 task :git_clone do
   puts "git_clone"
-  _, e, s = Open3.capture3("git clone https://github.com/vim/vim")
-  if s.exited? && s.exitstatus != 0 && s.exitstatus != 128
-    puts "unknown exit status!! #{s.exitstatus}"
-    puts "error : #{e}"
-      next
-  end
+  exec("git clone https://github.com/vim/vim")
 end
 

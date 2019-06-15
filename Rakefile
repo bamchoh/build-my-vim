@@ -22,7 +22,7 @@ def build_vim(type)
          "PYTHON3=#{PY3PATH}",
          "DYNAMIC_PYTHON3=yes",
          "PYTHON3_VER=#{PY3_VER}",
-         "RUBY=#{RB_PATH}",
+         # "RUBY=#{RB_PATH}",
          "DYNAMIC_RUBY=yes",
          "RUBY_VER=#{RB_VER}",
          "RUBY_API_VER_LONG=#{RB_API_VER}"]
@@ -43,22 +43,28 @@ def exec(cmd)
   end
 end
 
-def copy_runtime
-  src = File.join(__dir__, "vim", "runtime", "*")
-  dst = File.join("C:/Vim", "vim81")
-  FileUtils.cp_r(src, dst, :force => true)
-end
-
 desc 'Task description'
 task :all => [:git_pull, :gvim, :vim] do
   begin
-    FileUtils.mv "C:/Vim/vim.exe", "C:/Vim/vim_old.exe"
-    FileUtils.mv "C:/Vim/gvim.exe", "C:/Vim/gvim_old.exe"
+    original = File.join(__dir__, "original", "*")
+    build = File.join(__dir__, "build", Time.now.strftime("%Y%m%d"))
+    FileUtils.mkdir_p build
+    FileUtils.cp_r(Dir.glob(original), build, {:remove_destination => true})
+    FileUtils.mv File.join(__dir__, "vim", "src", "vim.exe"), build
+    FileUtils.mv File.join(__dir__, "vim", "src", "gvim.exe"), build
+
+    runtime_src = File.join(__dir__, "vim", "runtime", "*")
+    runtime_dest = File.join(build, "vim81")
+    FileUtils.cp_r(Dir.glob(runtime_src), runtime_dest)
+    link = 'C:\Vim'
+    build = build.gsub("/", "\\")
+    FileUtils.rm(link, {:force => true})
+    cmd = %|sudo cmd /c mklink /D #{link} "#{build}"|
+    p cmd
+    system(cmd)
   rescue => e
     puts e.message
   end
-  FileUtils.mv File.join(__dir__, "vim", "src", "vim.exe"), "C:/Vim/vim.exe"
-  FileUtils.mv File.join(__dir__, "vim", "src", "gvim.exe"), "C:/Vim/gvim.exe"
 end
 
 task :gvim => :make_clean do |t|

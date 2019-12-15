@@ -6,9 +6,9 @@ task :default => :all
 LUA_VERSION=51
 LUAPATH="c:/dev/lua#{LUA_VERSION}/src"
 PY3_VER=37
-PY3PATH=ENV["LOCALAPPDATA"]+"/Programs/Python/Python#{PY3_VER}-32"
-RB_VER=25
-RB_API_VER="2.5.0"
+PY3PATH=ENV["LOCALAPPDATA"]+"/Programs/Python/Python#{PY3_VER}"
+RB_VER=26
+RB_API_VER="2.6.0"
 RB_PATH="C:/Ruby#{RB_VER}-x64"
 
 def build_vim(type)
@@ -22,11 +22,11 @@ def build_vim(type)
          "PYTHON3=#{PY3PATH}",
          "DYNAMIC_PYTHON3=yes",
          "PYTHON3_VER=#{PY3_VER}",
-         # "RUBY=#{RB_PATH}",
+         "RUBY=#{RB_PATH}",
          "DYNAMIC_RUBY=yes",
          "RUBY_VER=#{RB_VER}",
-         "RUBY_API_VER_LONG=#{RB_API_VER}"]
-  cmd << "GUI=NO" if type == "vim"
+         "RUBY_API_VER_LONG=#{RB_API_VER}",
+         "VIMDLL=yes"]
   return cmd
 end
 
@@ -52,9 +52,10 @@ task :all => [:git_pull, :gvim, :vim] do
     FileUtils.cp_r(Dir.glob(original), build, {:remove_destination => true})
     FileUtils.mv File.join(__dir__, "vim", "src", "vim.exe"), build
     FileUtils.mv File.join(__dir__, "vim", "src", "gvim.exe"), build
+    FileUtils.mv File.join(__dir__, "vim", "src", "vim64.dll"), build
 
     runtime_src = File.join(__dir__, "vim", "runtime", "*")
-    runtime_dest = File.join(build, "vim81")
+    runtime_dest = File.join(build, "vim82")
     FileUtils.cp_r(Dir.glob(runtime_src), runtime_dest)
     link = 'C:\Vim'
     build = build.gsub("/", "\\")
@@ -70,7 +71,7 @@ end
 task :gvim => :make_clean do |t|
   puts t.name
   Dir.chdir(File.join(__dir__, "vim", "src")) do
-    exec(build_vim(t.name))
+    # exec(build_vim(t.name))
   end
 end
 

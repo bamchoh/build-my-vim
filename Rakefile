@@ -56,6 +56,7 @@ task :all => [:git_pull, :gvim, :vim] do
 
     runtime_src = File.join(__dir__, "vim", "runtime", "*")
     runtime_dest = File.join(build, "vim82")
+    FileUtils.mkdir_p runtime_dest
     FileUtils.cp_r(Dir.glob(runtime_src), runtime_dest)
     link = 'C:\Vim'
     build = build.gsub("/", "\\")
@@ -63,8 +64,6 @@ task :all => [:git_pull, :gvim, :vim] do
     cmd = %|sudo cmd /c mklink /D #{link} "#{build}"|
     p cmd
     system(cmd)
-  rescue => e
-    puts e.message
   end
 end
 

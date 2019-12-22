@@ -13,4 +13,4 @@ call rake %*
 
 echo ERRORLEVEL=%ERRORLEVEL%
 
-if not "ERRORLEVEL" == "0" pause
+if not "%ERRORLEVEL%" == "0" pause

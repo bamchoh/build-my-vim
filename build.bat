@@ -3,9 +3,10 @@
 setlocal
 
 set PATH=%PATH%;%PROGRAMFILES%\Git\bin
-set PATH=C:\Ruby26-x64\bin;%PATH%
-set PATH=C:\msys64\usr\bin;%PATH%
-set PATH=C:\msys64\mingw64\bin;%PATH%
+set PATH=C:\Ruby30-x64\bin;%PATH%
+set PATH=C:\Ruby30-x64\msys64\usr\bin;%PATH%
+set PATH=C:\Ruby30-x64\msys64\mingw64\bin;%PATH%
+set PATH=%PATH%;%USERPROFILE%\go\bin
 
 echo %PATH%
 

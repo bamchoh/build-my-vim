@@ -5,10 +5,10 @@ task :default => :all
 
 LUA_VERSION=51
 LUAPATH="c:/dev/lua#{LUA_VERSION}/src"
-PY3_VER=37
-PY3PATH=ENV["LOCALAPPDATA"]+"/Programs/Python/Python#{PY3_VER}"
-RB_VER=26
-RB_API_VER="2.6.0"
+PY3_VER=39
+PY3PATH=ENV["LOCALAPPDATA"]+"/Programs/Python/Python#{PY3_VER}-32"
+RB_VER=30
+RB_API_VER="3.0.0"
 RB_PATH="C:/Ruby#{RB_VER}-x64"
 
 def build_vim(type)
@@ -43,27 +43,28 @@ def exec(cmd)
   end
 end
 
+def original_dir
+  File.join(__dir__, "original", "*")
+end
+
+def build_dir
+  File.join(__dir__, "build")
+end
+
 desc 'Task description'
 task :all => [:git_pull, :gvim, :vim] do
   begin
-    original = File.join(__dir__, "original", "*")
-    build = File.join(__dir__, "build", Time.now.strftime("%Y%m%d"))
-    FileUtils.mkdir_p build
-    FileUtils.cp_r(Dir.glob(original), build, {:remove_destination => true})
-    FileUtils.mv File.join(__dir__, "vim", "src", "vim.exe"), build
-    FileUtils.mv File.join(__dir__, "vim", "src", "gvim.exe"), build
-    FileUtils.mv File.join(__dir__, "vim", "src", "vim64.dll"), build
+    FileUtils.rm(build_dir, force: true) if Dir.exist?(build_dir)
+    FileUtils.mkdir_p build_dir
+    FileUtils.cp_r(Dir.glob(original_dir), build_dir, remove_destination: true)
+    FileUtils.cp File.join(__dir__, "vim", "src", "vim.exe"), build_dir
+    FileUtils.cp File.join(__dir__, "vim", "src", "gvim.exe"), build_dir
+    FileUtils.cp File.join(__dir__, "vim", "src", "vim64.dll"), build_dir
 
     runtime_src = File.join(__dir__, "vim", "runtime", "*")
-    runtime_dest = File.join(build, "vim82")
+    runtime_dest = File.join(build_dir, "vim82")
     FileUtils.mkdir_p runtime_dest
     FileUtils.cp_r(Dir.glob(runtime_src), runtime_dest)
-    link = 'C:\Vim'
-    build = build.gsub("/", "\\")
-    FileUtils.rm(link, {:force => true})
-    cmd = %|sudo cmd /c mklink /D #{link} "#{build}"|
-    p cmd
-    system(cmd)
   end
 end
 
